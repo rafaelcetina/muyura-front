@@ -1,0 +1,15 @@
+export default interface Domicilio{
+    codigo_postal: number,
+    entidad_id: number,
+    municipio_id: number,
+    localidad_id: number,
+    municipio_key: string,
+    localidad_key: string,
+    asentamiento: string,
+    tipo_vialidad_id: number,
+    vialidad: string,
+    numero: string,
+    cruzamiento1: string,
+    cruzamiento2: string,
+    cruzamiento3: string,
+}
