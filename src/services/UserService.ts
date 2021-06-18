@@ -1,4 +1,5 @@
 import API from '@/plugins/axios'
+import {Usuario} from "@/models/Usuario";
 
 class UserService {
     getAll(): Promise<any> {
@@ -9,11 +10,11 @@ class UserService {
         return API.get(`/usuarios/${id}`);
     }
 
-    create(data: {name: string, email: string, password: string, c_password: string}): Promise<any> {
+    create(data: Usuario): Promise<any> {
         return API.post(`/usuarios`, data);
     }
 
-    update(id: any, data: {name: string, email: string}): Promise<any> {
+    update(id: any, data: Usuario): Promise<any> {
         return API.put(`/usuarios/${id}`, data);
     }
 

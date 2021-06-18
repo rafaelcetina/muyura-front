@@ -41,6 +41,9 @@ export default Vue.extend({
           EventBus.$on('response-error', () => {
               this.overlay = false;
           });
+        EventBus.$on('request-error', () => {
+          this.overlay = false;
+        });
       },
       components: {
         Sidebar

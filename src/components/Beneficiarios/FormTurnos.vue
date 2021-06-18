@@ -48,7 +48,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import moment from 'moment'
-import PeliculaService from '@/services/PeliculaService'
+import PeliculaService from '@/services/BeneficiarioService'
 import Pelicula from '@/models/Pelicula'
 import RULES from '@/mixins/rules'
 import {VForm} from '@/types/formvalidate'

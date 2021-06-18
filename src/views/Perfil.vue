@@ -2,15 +2,56 @@
   <v-container fluid>
     <v-layout column>
       <v-card>
-        <v-card-text>
-          <v-text-field
-              :readonly="!editable"
-              v-model="formUser.name"
-              label="Nombre"></v-text-field>
-          <v-text-field
-              :readonly="!editable"
-              v-model="formUser.email"
-              label="Email"></v-text-field>
+        <v-card-text class="pa-12">
+          <v-row>
+            <v-col cols="12" md="4">
+              <v-text-field
+                  :readonly="!editable"
+                  v-model="formUser.nombre"
+                  label="Nombre"></v-text-field>
+            </v-col>
+            <v-col cols="12" md="4">
+              <v-text-field
+                  :readonly="!editable"
+                  v-model="formUser.apellido1"
+                  label="Primer Apellido"></v-text-field>
+            </v-col>
+            <v-col cols="12" md="4">
+              <v-text-field
+                  :readonly="!editable"
+                  v-model="formUser.apellido2"
+                  label="Segundo Apellido"></v-text-field>
+            </v-col>
+            <v-col cols="12" md="3">
+              <v-text-field
+                  v-uppercase
+                  :rules="[rules.required,rules.regex('^[A-z]{4}[0-9]{6}[0-9A-z]{3}$')]"
+                  v-mask="'AAAA######NNN'"
+                  v-model="formUser.rfc"
+                  label="RFC"
+                  autocomplete="new-password"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="3">
+              <v-text-field
+                  :readonly="!editable"
+                  v-uppercase
+                  v-mask="'(###) ### ####'"
+                  v-model="formUser.telefono"
+                  label="Telefono"
+                  aria-autocomplete="none"
+                  autocomplete="off"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field
+                  :readonly="!editable"
+                  v-model="formUser.email"
+                  label="Email"></v-text-field>
+            </v-col>
+
+
+          </v-row>
         </v-card-text>
         <v-card-actions>
           <v-btn v-if="editable" :loading="loading" @click.native="cancelar()">
@@ -35,19 +76,18 @@
 import Vue from 'vue'
 import UserService from "@/services/UserService";
 import {mapGetters} from "vuex";
+import {Usuario} from "@/models/Usuario";
+import RULES from '@/mixins/rules'
+import UnMask from '@/common/unmask'
+
 export default Vue.extend({
   name: 'Perfil',
+  mixins: [RULES],
   data () {
     return {
       editable: false,
-      formUser: {
-        name: '',
-        email: '',
-      },
-      formDefault: {
-        name: '',
-        email: '',
-      },
+      formUser: new Usuario(),
+      formDefault: new Usuario(),
     }
   },
   computed: {
@@ -61,8 +101,8 @@ export default Vue.extend({
   methods: {
     async getData(){
       let {data} = await UserService.get(this.id);
-      this.formDefault.name = data.data.name;
-      this.formDefault.email = data.data.email;
+      data.data.telefono = Vue.filter('VMask')(data.data.telefono, '(###) ### ####'); // this.$options.filters.VMask(data.data.telefono, '(###) ### ####');
+      this.formDefault = data.data;
       this.formUser = Object.assign({}, this.formDefault);
     },
     editar(){
@@ -73,9 +113,11 @@ export default Vue.extend({
       this.editable = false;
     },
     async update(){
-      let response = await UserService.update(this.id, this.formUser);
+      let data = Object.assign({}, this.formUser);
+      data.telefono = UnMask.unmask(data.telefono, '(###) ### ####')
+      let response = await UserService.update(this.id, data);
       if(response.success) {
-        await this.$store.dispatch('updateUser', this.formUser.name)
+        await this.$store.dispatch('updateUser', this.formUser.nombre)
         this.formDefault = Object.assign({}, this.formUser);
       }
       this.editable = false;

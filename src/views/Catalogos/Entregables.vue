@@ -2,7 +2,7 @@
     <v-container>
         <v-row>
             <v-col>
-                <h1 class="text-h3">Dashboard</h1>
+                <h1 class="text-h3">Entregables</h1>
             </v-col>
         </v-row>
     </v-container>

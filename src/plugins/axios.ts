@@ -1,15 +1,10 @@
 import axios, { AxiosInstance } from 'axios';
 import EventBus from './event-bus';
 import store from '@/store'
-
-let headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type'
-}
+import Vue from 'vue'
 
 const API: AxiosInstance = axios.create({
-    //baseURL: "https://apptest-global.sytes.net/api",
+    //baseURL: "http://api-brigadas.edgeit.mx/api",
     baseURL: "http://brigadas.test:82/api",
     headers: {
         "Content-type": "application/json",
@@ -20,7 +15,7 @@ const API: AxiosInstance = axios.create({
 API.interceptors.request.use(
     conf => {
         EventBus.$emit('before-request');
-        conf.headers = { 
+        conf.headers = {
             'Authorization': `Bearer ${store.state.token}`,
           }
         return conf;
@@ -36,13 +31,48 @@ API.interceptors.response.use(
         return response;
     },
     error => {
-        if(error.response!=undefined){
-            if(error.response.status==403)
-                console.log("Permiso denegado - "+error.response.data.message);
-            if(error.response.status==429)
-                console.log("Ha realizado demasiadas peticiones seguidas - "+error.response.data.message);
-        }else
-            console.log(error);
+        const {config, response} = error
+        const originalRequest = config
+
+        if (response.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true
+            //TODO: Try to get a new api token
+        } else {
+            if (error.response) {
+                let status = error.response.status
+
+                switch (status) {
+                    case 500:
+                        console.log("Error de servidor - "+error.response.data.message);
+                        Vue.$toast.error("Error de servidor");
+                        break;
+                    case 422:
+                        console.log("Request data invalido");
+                        Vue.$toast.error("Los datos enviados son inválidos");
+                        break;
+                    case 403:
+                        console.log("Permiso denegado - " + error.response.data.message)
+                        Vue.$toast.error("Permiso denegado");
+                        break
+                    case 429:
+                        Vue.$toast.error("Ha realizado demasiadas peticiones seguidas");
+                        console.log("Ha realizado demasiadas peticiones seguidas - " + error.response.data.message);
+                        break
+                    default:
+                        console.log(error.response.data)
+                        console.log(error.response.status)
+                        console.log(error.response.headers)
+                }
+                //throw error.response
+            } else if (error.request) {
+                console.log(error.request)
+                //throw error.request
+            } else {
+                console.log('Error', error.message)
+                //throw error.message
+            }
+        }
+
         EventBus.$emit('response-error');
         return Promise.reject(error);
     }

@@ -2,10 +2,10 @@
   <v-container>
     <v-row>
       <v-col>
-        <h1 class="text-h3">Administrador</h1>
+        <h1 class="text-h3">Usuarios</h1>
       </v-col>
       <v-col class="text-right">
-        <v-btn color="success" @click="openNew()">Nuevo Administrador</v-btn>
+        <v-btn color="success" @click="openNew()">Nuevo Usuario</v-btn>
       </v-col>
     </v-row>
     <v-row>
@@ -51,23 +51,26 @@
 <script lang="ts">
 import Vue from 'vue'
 import UserService from '@/services/UserService'
-import Usuario from '@/models/Usuario'
-import FormCreate from '@/components/Admin/FormCreate.vue'
+import {_Usuario, Usuario} from '@/models/Usuario'
+import FormCreate from '@/components/Usuarios/FormCreate.vue'
 
 export default Vue.extend({
-  name: 'Home',
+  name: 'Usuarios',
   mixins: [],
   components: {
     FormCreate,
   },
   data: () => ({
     dialog: false,
-    usuarios: [] as Usuario[],
-    usuario: {} as Usuario,
+    usuarios: [] as _Usuario[],
+    usuario: new Usuario(),
     search: '',
     headers: [
-      { text: 'Id', value: 'id', align: 'left'  },
-      { text: 'Nombre', value: 'name', align: 'left'  },
+      { text: 'Id', value: 'id', align: 'left', width: 120  },
+      { text: 'RFC', value: 'rfc', align: 'left', width: 150  },
+      { text: 'Nombre', value: 'nombre_completo', align: 'left'  },
+      { text: 'Username', value: 'username', align: 'left'  },
+      { text: 'Rol', value: 'tipo_usuario', align: 'left'  },
       { text: 'Email', value: 'email', align: 'center'  },
       { text: '', value: 'action', width: 240, sortable: false },
     ]
@@ -87,6 +90,7 @@ export default Vue.extend({
       this.dialog = true;
     },
     editar(item: any){
+      //this.usuario.setData(item);
       this.usuario = Object.assign({}, item);
       this.dialog = true;
     },
@@ -97,7 +101,7 @@ export default Vue.extend({
     },
     closeDialog(reload: boolean){
       this.dialog = false;
-      this.usuario = {} as Usuario;
+      this.usuario = new Usuario();
       if(reload)
         this.cargar();
     }

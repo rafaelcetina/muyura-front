@@ -27,7 +27,7 @@ export default Vue.extend({
               mayorIgual(number: string | number){ return (v: string) => Number.parseFloat(v)>=number || 'Ingrese un valor mayor o igual a '+number },
               menor(number: string | number){ return (v: string) => Number.parseFloat(v)<number || 'Ingrese un valor menor a '+number },
               menorIgual(number: string | number){ return (v: string) => Number.parseFloat(v)<=number || 'Ingrese un valor menor o igual a '+number },
-              longDigit(number: string){
+              longDigit(number: string|number){
                 return (v: any) => (v || '').length == number || 'Debe proporcionar '+number+' digitos';
               },
               min(number: string | number){

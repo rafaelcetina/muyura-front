@@ -1,32 +1,33 @@
 import API from '@/plugins/axios'
+import {Beneficiario} from "@/models/Beneficiario";
 
-class PeliculaService {
+class BeneficiarioService {
       getAll(): Promise<any> {
-        return API.get("/peliculas");
+        return API.get("/beneficiarios");
       }
     
       get(id: any): Promise<any> {
-        return API.get(`/peliculas/${id}`);
+        return API.get(`/beneficiarios/${id}`);
       }
     
       create(data: any): Promise<any> {
-        return API.post("/peliculas", data);
+        return API.post("/beneficiarios", data);
       }
     
       update(id: any, data: any): Promise<any> {
-        return API.put(`/peliculas/${id}`, data);
+        return API.put(`/beneficiarios/${id}`, data);
       }
     
       delete(id: any): Promise<any> {
-        return API.delete(`/peliculas/${id}`);
+        return API.delete(`/beneficiarios/${id}`);
       }
 
       activar(id: any): Promise<any> {
-          return API.post(`/peliculas/${id}/change-estatus/1`);
+          return API.post(`/beneficiarios/${id}/change-estatus/1`);
       }
 
       desactivar(id: any): Promise<any> {
-          return API.post(`/peliculas/${id}/change-estatus/0`);
+          return API.post(`/beneficiarios/${id}/change-estatus/0`);
       }
 
       setHorarrios(id: any, data: any){
@@ -36,9 +37,9 @@ class PeliculaService {
       uploadImage(id: any, imagen: any){
           const formData = new FormData();
           formData.append('p_imagen', imagen);
-          return API.post(`/peliculas/${id}/upload-image`, formData);
+          return API.post(`/beneficiarios/${id}/upload-image`, formData);
       }
 
 }
 
-export default new PeliculaService();
+export default new BeneficiarioService();
