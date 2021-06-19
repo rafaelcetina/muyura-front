@@ -16,11 +16,11 @@
             {{item.edad}} años
           </template>
           <template v-slot:item.folio_pulsera="{item}">
-            <span v-if="folio_pulsera==null">NO ASIGNADA</span>
-            <span v-else>{{folio_pulsera}}</span>
+            <span v-if="item.folio_pulsera==null">NO ASIGNADA</span>
+            <span v-else>{{item.folio_pulsera}}</span>
           </template>
           <template v-slot:item.estatus="{item}">
-            <span v-if="estatus==1">ACTIVO</span>
+            <span v-if="item.estatus==1">ACTIVO</span>
             <span v-else>BAJA</span>
           </template>
           <template v-slot:item.action="{ item }">

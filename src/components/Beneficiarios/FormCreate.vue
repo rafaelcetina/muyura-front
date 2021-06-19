@@ -53,7 +53,7 @@
               ></v-text-field>
             </v-col>
           </v-row>
-          <direccion ref="formDireccion" :domicilio="formdata.domicilio" :original="formdata.domicilio"></direccion>
+          <direccion ref="formDireccion" :domicilio="formdata.domicilio" :original="formdata.domicilio" @update="setDomicilio"></direccion>
         </v-card-text>
       </v-form>
       <v-card-actions>
@@ -71,6 +71,8 @@ import RULES from '@/mixins/rules'
 import {VForm} from '@/types/formvalidate'
 import {_Beneficiario, Beneficiario} from "@/models/Beneficiario"
 import Direccion from "@/components/Beneficiarios/Direccion.vue";
+import {_Domicilio} from "@/models/Domicilio";
+import EventBus from "@/plugins/event-bus";
 
 export default Vue.extend({
   name: 'FormBeneficiario',
@@ -121,19 +123,24 @@ export default Vue.extend({
       immediate: true,
       handler(val) {
         this.dialog = val;
-        this.reset();
       }
     }
   },
   methods: {
+    setDomicilio(domicilio: _Domicilio){
+      this.formdata.domicilio = Object.assign({},domicilio);
+    },
     reset() {
+      this.formdata = Object.assign({}, this.formDefault);
     },
     close(reload: boolean = false) {
       this.form.resetValidation();
-      this.formDir.resetValidation();
+      EventBus.$emit('reset-direccion');
+      this.reset();
       this.$emit('close-dialog', reload);
     },
     async save() {
+      EventBus.$emit('reset-direccion');
       let beneficiario_id = this.formdata.id;
       let validDir = this.formDir.validate();
       if (this.form.validate() && validDir) {
@@ -141,11 +148,10 @@ export default Vue.extend({
           await BeneficiarioService.update(this.formdata.id, this.formdata);
         else {
           console.log(this.formdata);
-          let {data} = await BeneficiarioService.create(this.formdata);
+          let {data} = await BeneficiarioService.create(this.formdata, true);
           beneficiario_id = data.data.id;
         }
-
-        this.formdata = Object.assign({}, this.formDefault);
+        this.reset();
         this.$toast.success(`Beneficiario registrado exitosamente`);
         this.close(true);
       } else

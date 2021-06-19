@@ -3,7 +3,7 @@
             <v-card>
                 <v-toolbar color="grey darken-3" dark>
                     <v-toolbar-title class="ml-0 pl-4">
-                        <span class="hidden-sm-and-down">Establecer Horarios</span>
+                        <span class="hidden-sm-and-down">Asignar Pulsera</span>
                     </v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-btn icon dark @click="close()">
@@ -132,7 +132,7 @@ export default Vue.extend({
         },
         async save(){
             if(this.form.validate()){
-                let {data} = await PeliculaService.setHorarrios(this.pelicula.id, {turnos: this.turnos});
+                //let {data} = await PeliculaService.setHorarrios(this.pelicula.id, {turnos: this.turnos});
                 this.formPelicula = Object.assign({}, this.formDefault);
                 this.close(true);
             }

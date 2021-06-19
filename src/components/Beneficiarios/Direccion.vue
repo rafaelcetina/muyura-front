@@ -18,12 +18,12 @@
           </v-col>
           <v-col cols="12" md="4" sm="12">
             <v-autocomplete
+                readonly
                 v-model="formDom.entidad_id"
                 :items="catalogos.entidades"
                 :rules="[rules.required]"
                 autocomplete="new-password"
                 :name="`entidad-${Math.random()}`"
-                clearable
                 item-text="nom_ent"
                 item-value="cve_ent"
                 label="Estado"
@@ -81,21 +81,12 @@
           </v-col>
           <v-col cols="12" md="3" sm="12">
             <v-text-field
-                v-model="formDom.numero_exterior"
+                v-model="formDom.numero"
                 v-uppercase
                 :rules="[rules.required]"
                 autocomplete="new-password"
                 :name="`num_ext-${Math.random()}`"
-                label="Número Exterior"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12" md="3" sm="12">
-            <v-text-field
-                v-model="formDom.numero_interior"
-                v-uppercase
-                autocomplete="new-password"
-                :name="`num_int-${Math.random()}`"
-                label="Número Interior"
+                label="Número"
             ></v-text-field>
           </v-col>
           <v-col cols="12" md="4" sm="12">
@@ -136,6 +127,7 @@ import RULES from "@/mixins/rules"
 import {Domicilio, _Domicilio} from "@/models/Domicilio";
 import DomicilioService from "@/services/DomicilioService";
 import {VForm} from "@/types/formvalidate";
+import EventBus from "@/plugins/event-bus";
 
 export default Vue.extend({
   name: 'Direccion',
@@ -160,9 +152,12 @@ export default Vue.extend({
   created() {
   },
   mounted() {
-    console.log(this.domicilio);
-    this.formDom = this.domicilio
-    this.cargarDirecciones();
+    EventBus.$on('reset-direccion', () => {
+        this.reset();
+    });
+    EventBus.$on('update-direccion', () => {
+      this.reset();
+    });
   },
   computed: {
     form(): VForm {
@@ -170,23 +165,20 @@ export default Vue.extend({
     },
   },
   watch: {
-    /*'user': {
-        handler(val) {
-            if(val!=null){
-                this.defaultItem.user_id = this.user.id;
-                this.cargarDirecciones();
-            }
-        },
+    domicilio: {
         immediate: true,
-        deep: true
-    },*/
-    'formDom.entidad_id': {
+        deep: true,
+        handler(d){
+          this.cargar();
+        }
+    },
+    /*'formDom.entidad_id': {
         handler(){
           if (!this.catalogos.prellenar && this.formDom.entidad_id != null)
             this.cargarMunicipios(this.formDom.entidad_id);
         },
       immediate: true
-    },
+    },*/
     'formDom.municipio_id': function () {
       if (!this.catalogos.prellenar && this.formDom.municipio_id != null)
         this.cargarLocalidades(this.formDom.entidad_id, this.formDom.municipio_id);
@@ -196,6 +188,11 @@ export default Vue.extend({
     }
   },
   methods: {
+    reset(){
+      this.catalogos.localidades = [];
+      this.formDom = Object.assign({}, this.formDefault);
+      this.resetValidation();
+    },
     validate() {
       return this.form.validate();
     },
@@ -205,13 +202,16 @@ export default Vue.extend({
     update() {
       this.$emit('update',this.formDom)
     },
-    async cargarDirecciones() {
-      let {data} = await DomicilioService.getEntidades();
-      this.catalogos.entidades = data
-      /*axios.get(LaravelRoute('account.locations',{user_id: this.user.id})).then(response => {
-          if(response.data!=null)
-              this.editarDireccion(response.data);
-      });*/
+    async cargar() {
+      if(this.catalogos.entidades.length==0){
+        let {data} = await DomicilioService.getEntidades();
+        this.catalogos.entidades = data
+        let response = await DomicilioService.getMunicipios(14);
+        this.catalogos.municipios = response.data
+      }
+      this.formDom = Object.assign({}, this.domicilio);
+
+      await this.cargarCP(this.formDom.codigo_postal);
     },
     prellenarCP() {
       if (this.formDom.codigo_postal != '') {
@@ -220,11 +220,9 @@ export default Vue.extend({
             this.cargarCP(this.formDom.codigo_postal).then(r => {
               if(r!=null){
                 this.formDom.entidad_id = this.catalogos.entidadDefault;
-                this.cargarMunicipios(this.catalogos.entidadDefault).then(r => {
-                  this.formDom.municipio_id = this.catalogos.municipioDefault;
-                  this.cargarLocalidades(this.catalogos.entidadDefault, this.catalogos.municipioDefault).then(r => {
-                    this.formDom.localidad_id = this.catalogos.localidadDefault;
-                  });
+                this.formDom.municipio_id = this.catalogos.municipioDefault;
+                this.cargarLocalidades(this.catalogos.entidadDefault, this.catalogos.municipioDefault).then(r => {
+                  this.formDom.localidad_id = this.catalogos.localidadDefault;
                 }).then(r => {
                   this.catalogos.prellenar = false;
                   resolve(1);
@@ -237,37 +235,32 @@ export default Vue.extend({
     },
     cargarCP(cp: string) {
       return new Promise((resolve, reject) => {
-        DomicilioService.getAsentamientos(cp).then(response => {
-          let {data} = response;
-          if (data.length > 0) {
-            this.catalogos.asentamientos = data.map((item: any) => {
-              return item.label;
+        if (this.formDom.codigo_postal != '') {
+          if (this.formDom.codigo_postal.length == 5) {
+            DomicilioService.getAsentamientos(cp).then(response => {
+              let {data} = response;
+              if (data.length > 0) {
+                this.catalogos.asentamientos = data.map((item: any) => {
+                  return item.label;
+                });
+                this.catalogos.prellenar = true;
+                this.catalogos.entidadDefault = data[0].cve_ent;
+                this.catalogos.municipioDefault = data[0].cve_mun;
+                this.catalogos.localidadDefault = data[0].cve_loc;
+                this.formDom.asentamiento = '';
+                resolve(data[0]);
+              } else {
+                //this.formDom.codigo_postal = '';
+                resolve(null);
+              }
+            }).catch(error => {
+              reject(0);
             });
-            this.catalogos.prellenar = true;
-            this.catalogos.entidadDefault = data[0].cve_ent;
-            this.catalogos.municipioDefault = data[0].cve_mun;
-            this.catalogos.localidadDefault = data[0].cve_loc;
-            this.formDom.asentamiento = '';
-            resolve(data[0]);
-          } else{
-            //this.formDom.codigo_postal = '';
-            resolve(null);
-          }
-        }).catch(error => {
-          reject(0);
-        });
+          }else
+            reject(0)
+        }else
+          reject(0)
       })
-    },
-    cargarMunicipios(entidad_id: number | null) {
-      return new Promise((resolve, reject) => {
-        if (entidad_id != null) {
-          DomicilioService.getMunicipios(entidad_id).then(response => {
-            let {data} = response;
-            this.catalogos.municipios = data;
-            resolve(data);
-          });
-        }
-      });
     },
     cargarLocalidades(entidad_id: number | null, municipio_id: number | null) {
       return new Promise((resolve, reject) => {

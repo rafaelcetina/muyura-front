@@ -3,8 +3,6 @@ interface _Domicilio{
     entidad_id: number | null
     municipio_id: number | null
     localidad_id: number | null
-    municipio_key: string
-    localidad_key: string
     asentamiento: string
     tipo_vialidad_id: number | null
     vialidad: string
@@ -19,8 +17,6 @@ class Domicilio implements _Domicilio{
     entidad_id: number | null
     municipio_id: number | null
     localidad_id: number | null
-    municipio_key: string
-    localidad_key: string
     asentamiento: string
     tipo_vialidad_id: number | null
     vialidad: string
@@ -34,8 +30,6 @@ class Domicilio implements _Domicilio{
         this.entidad_id = 14
         this.municipio_id = null
         this.localidad_id = null
-        this.municipio_key = ''
-        this.localidad_key = ''
         this.asentamiento = ''
         this.tipo_vialidad_id = null
         this.vialidad = ''

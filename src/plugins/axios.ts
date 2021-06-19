@@ -4,9 +4,10 @@ import store from '@/store'
 import Vue from 'vue'
 
 const API: AxiosInstance = axios.create({
-    //baseURL: "http://api-brigadas.edgeit.mx/api",
-    baseURL: "http://brigadas.test:82/api",
+    baseURL: "http://api-brigadas.edgeit.mx/api",
+    //baseURL: "http://brigadas.test:82/api",
     headers: {
+        "Accept": "application/json",
         "Content-type": "application/json",
     },
 });
@@ -15,9 +16,7 @@ const API: AxiosInstance = axios.create({
 API.interceptors.request.use(
     conf => {
         EventBus.$emit('before-request');
-        conf.headers = {
-            'Authorization': `Bearer ${store.state.token}`,
-          }
+        conf.headers['Authorization'] =`Bearer ${store.state.token}`;
         return conf;
     },
     error => {
@@ -36,6 +35,11 @@ API.interceptors.response.use(
 
         if (response.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true
+            console.log("Token inválido - " + error.response.data.message)
+            Vue.$toast.error("Token de sesión inválido");
+            store.dispatch('logout');
+            location.href = "/";
+            //EventBus.$router.push();
             //TODO: Try to get a new api token
         } else {
             if (error.response) {
