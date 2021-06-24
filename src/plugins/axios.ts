@@ -4,8 +4,8 @@ import store from '@/store'
 import Vue from 'vue'
 
 const API: AxiosInstance = axios.create({
-    baseURL: "http://api-brigadas.edgeit.mx/api",
-    //baseURL: "http://brigadas.test:82/api",
+    //baseURL: "http://api-brigadas.edgeit.mx/api",
+    baseURL: "http://brigadas.test/api",
     headers: {
         "Accept": "application/json",
         "Content-type": "application/json",

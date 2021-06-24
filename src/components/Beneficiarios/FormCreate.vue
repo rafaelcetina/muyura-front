@@ -132,23 +132,22 @@ export default Vue.extend({
     },
     reset() {
       this.formdata = Object.assign({}, this.formDefault);
+      EventBus.$emit('reset-direccion');
     },
     close(reload: boolean = false) {
       this.form.resetValidation();
-      EventBus.$emit('reset-direccion');
       this.reset();
       this.$emit('close-dialog', reload);
     },
     async save() {
-      EventBus.$emit('reset-direccion');
+      EventBus.$emit('update-direccion');
       let beneficiario_id = this.formdata.id;
       let validDir = this.formDir.validate();
       if (this.form.validate() && validDir) {
         if (this.formdata.id != null)
           await BeneficiarioService.update(this.formdata.id, this.formdata);
         else {
-          console.log(this.formdata);
-          let {data} = await BeneficiarioService.create(this.formdata, true);
+          let {data} = await BeneficiarioService.create(this.formdata);
           beneficiario_id = data.data.id;
         }
         this.reset();

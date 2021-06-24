@@ -48,11 +48,8 @@
 <script lang="ts">
 import Vue from 'vue'
 import moment from 'moment'
-import PeliculaService from '@/services/BeneficiarioService'
-import Pelicula from '@/models/Pelicula'
 import RULES from '@/mixins/rules'
 import {VForm} from '@/types/formvalidate'
-import TurnoService from "@/services/TurnoService";
 
 export default Vue.extend({
     name: 'FormTurnos',
@@ -62,7 +59,7 @@ export default Vue.extend({
             default: false
         },
         pelicula: {
-          type: Object as () => Pelicula,
+          type: Object,
           default: null,
           required: false,
         }
@@ -124,8 +121,8 @@ export default Vue.extend({
     },
     methods: {
         async cargar(){
-            let {data} = await TurnoService.getAll();
-             this.catalogo.turnos = data.data;
+            //let {data} = await TurnoService.getAll();
+          //this.catalogo.turnos = data.data;
         },
         close(reload: boolean = false){
             this.$emit('close-dialog', reload);

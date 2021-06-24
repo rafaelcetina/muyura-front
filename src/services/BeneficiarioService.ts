@@ -1,26 +1,21 @@
 import API from '@/plugins/axios'
 import {Beneficiario} from "@/models/Beneficiario";
+import {DefaultService} from "@/services/DefaultService";
 
-class BeneficiarioService {
-    getAll(): Promise<any> {
-        return API.get("/beneficiarios");
+class BeneficiarioService extends DefaultService {
+
+    constructor() {
+        super('beneficiarios');
     }
 
-    get(id: any): Promise<any> {
-        return API.get(`/beneficiarios/${id}`);
-    }
-
-    create(data: any, setLocation: boolean): Promise<any> {
-        data.save_dom = setLocation;
-        return API.post("/beneficiarios", data);
+    create(data: any): Promise<any> {
+        data.save_dom = true;
+        return API.post(`/beneficiarios`, data);
     }
 
     update(id: any, data: any): Promise<any> {
+        data.save_dom = true;
         return API.put(`/beneficiarios/${id}`, data);
-    }
-
-    delete(id: any): Promise<any> {
-        return API.delete(`/beneficiarios/${id}`);
     }
 
     activar(id: any): Promise<any> {

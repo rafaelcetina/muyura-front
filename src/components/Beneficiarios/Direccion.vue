@@ -156,7 +156,7 @@ export default Vue.extend({
         this.reset();
     });
     EventBus.$on('update-direccion', () => {
-      this.reset();
+      this.update();
     });
   },
   computed: {
@@ -256,10 +256,8 @@ export default Vue.extend({
             }).catch(error => {
               reject(0);
             });
-          }else
-            reject(0)
-        }else
-          reject(0)
+          }
+        }
       })
     },
     cargarLocalidades(entidad_id: number | null, municipio_id: number | null) {
