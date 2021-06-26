@@ -4,6 +4,7 @@ import vuetify from './plugins/vuetify';
 import router from './router'
 import store from './store'
 import UpperCase from '@/directives/uppercase'
+import NumericOnly from '@/directives/numeric'
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 // @ts-ignore
@@ -31,6 +32,8 @@ const options = {
 Vue.use(Toast, options);
 
 Vue.directive('uppercase', UpperCase);
+Vue.directive('numeric', NumericOnly);
+
 new Vue({
   router,
   store,

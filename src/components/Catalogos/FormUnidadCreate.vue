@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="800px">
     <v-card>
-      <v-toolbar color="grey darken-3" dark>
+      <v-toolbar color="#8784BF" dark>
         <v-toolbar-title class="ml-0 pl-4">
           <span class="hidden-sm-and-down">Nueva Unidad</span>
         </v-toolbar-title>

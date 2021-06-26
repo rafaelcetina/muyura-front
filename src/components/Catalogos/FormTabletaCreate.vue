@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="800px">
     <v-card>
-      <v-toolbar color="grey darken-3" dark>
+      <v-toolbar color="#8784BF" dark>
         <v-toolbar-title class="ml-0 pl-4">
           <span class="hidden-sm-and-down">Nueva Tableta</span>
         </v-toolbar-title>
@@ -13,7 +13,7 @@
       <v-form ref="form">
         <v-card-text max-heigth="800px">
           <v-row>
-            <v-col cols="12" md="12">
+            <v-col cols="12" md="6">
               <v-select
                   :rules="[rules.required]"
                   v-model="formdata.marca"
@@ -22,7 +22,7 @@
                   clearable
               ></v-select>
             </v-col>
-            <v-col cols="12" md="12">
+            <v-col cols="12" md="6">
               <v-text-field
                   v-model="formdata.modelo"
                   v-uppercase
@@ -40,7 +40,7 @@
                   label="No Serie"
               ></v-text-field>
             </v-col>
-            <v-col cols="12" md="12">
+            <v-col cols="12" md="6">
               <v-text-field
                   v-model="formdata.mac"
                   v-uppercase
@@ -50,7 +50,7 @@
                   label="MAC"
               ></v-text-field>
             </v-col>
-            <v-col cols="12" md="12">
+            <v-col cols="12" md="6">
               <v-text-field
                   v-model="formdata.imei"
                   v-uppercase

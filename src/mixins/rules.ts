@@ -22,7 +22,7 @@ export default Vue.extend({
                       }
                   }
               },
-              notCero: (v: string) => v=='0.00' || 'Ingrese un valor mayor a 0',
+              notCero: (v: number) => v==0 || 'Ingrese un valor mayor a 0',
               mayor(number: string | number){ return (v: string) => Number.parseFloat(v)>number || 'Ingrese un valor mayor a '+number },
               mayorIgual(number: string | number){ return (v: string) => Number.parseFloat(v)>=number || 'Ingrese un valor mayor o igual a '+number },
               menor(number: string | number){ return (v: string) => Number.parseFloat(v)<number || 'Ingrese un valor menor a '+number },

@@ -1,7 +1,7 @@
 <template>
-    <v-dialog v-model="dialog" persistent max-width="800px">
+    <v-dialog v-model="dialog" persistent max-width="400px">
             <v-card>
-                <v-toolbar color="grey darken-3" dark>
+                <v-toolbar color="#8784BF" dark>
                     <v-toolbar-title class="ml-0 pl-4">
                         <span class="hidden-sm-and-down">Asignar Pulsera</span>
                     </v-toolbar-title>
@@ -13,27 +13,16 @@
                 <v-form ref="form">
                     <v-card-text max-heigth="800px">
                         <v-row>
-                            <v-col cols="12" md="8" sm="12">
+                            <v-col cols="12">
                                 <v-text-field
                                     v-uppercase
                                         readonly
                                         :value="formPelicula.p_nombre"
-                                        label="Nombre"
+                                        label="Folio"
                                         aria-autocomplete="none"
                                         autocomplete="off"
                                 ></v-text-field>
                             </v-col>
-                        </v-row>
-                        <v-row>
-                            <template v-for="t in catalogo.turnos">
-                                <v-col cols="12" md="4">
-                                    <v-checkbox
-                                            v-model="turnos"
-                                            :label="t.t_hora"
-                                            :value="t.id"
-                                    ></v-checkbox>
-                                </v-col>
-                            </template>
                         </v-row>
                     </v-card-text>
                 </v-form>
@@ -120,10 +109,6 @@ export default Vue.extend({
         }
     },
     methods: {
-        async cargar(){
-            //let {data} = await TurnoService.getAll();
-          //this.catalogo.turnos = data.data;
-        },
         close(reload: boolean = false){
             this.$emit('close-dialog', reload);
         },
