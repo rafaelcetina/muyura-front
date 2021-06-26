@@ -92,7 +92,7 @@
       </v-col>
     </v-row>
     <form-create :beneficiario="beneficiario" :show="dialog" @close-dialog="closeDialog"></form-create>
-    <form-turnos :show="dialogT" @close-dialog="closeDialog"></form-turnos>
+    <form-asignar :beneficiario="beneficiario" :show="dialogT" @close-dialog="closeDialog"></form-asignar>
   </v-container>
 </template>
 
@@ -100,14 +100,14 @@
 import Vue from 'vue'
 import BeneficiarioService from '@/services/BeneficiarioService'
 import FormCreate from '@/components/Beneficiarios/FormCreate.vue'
-import FormTurnos from "@/components/Beneficiarios/FormTurnos.vue";
+import FormAsignar from "@/components/Beneficiarios/FormAsignar.vue";
 import {_Beneficiario, Beneficiario} from "@/models/Beneficiario";
 
 export default Vue.extend({
   name: 'Beneficiarios',
   mixins: [],
   components: {
-    FormCreate, FormTurnos
+    FormCreate, FormAsignar
   },
   data: () => ({
     dialog: false,
@@ -144,7 +144,7 @@ export default Vue.extend({
       this.dialog = true;
     },
     asignar(item: any) {
-      //this.pelicula = Object.assign({}, item);
+      this.beneficiario = Object.assign({}, item);
       this.dialogT = true;
     },
     activar(item: { id: any; estatus: number }) {

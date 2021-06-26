@@ -13,14 +13,27 @@
                 <v-form ref="form">
                     <v-card-text max-heigth="800px">
                         <v-row>
+                          <v-col cols="12">
+                            <v-text-field
+                                readonly
+                                :value="beneficiario.nombre_completo"
+                                label="Beneficiario"
+                            ></v-text-field>
+                          </v-col>
+                          <v-col cols="12">
+                            <v-text-field
+                                readonly
+                                :value="beneficiario.curp"
+                                label="CURP Beneficiario"
+                            ></v-text-field>
+                          </v-col>
                             <v-col cols="12">
                                 <v-text-field
                                     v-uppercase
-                                        readonly
-                                        :value="formPelicula.p_nombre"
-                                        label="Folio"
-                                        aria-autocomplete="none"
-                                        autocomplete="off"
+                                    v-model="folio"
+                                    label="Folio"
+                                    aria-autocomplete="none"
+                                    autocomplete="off"
                                 ></v-text-field>
                             </v-col>
                         </v-row>
@@ -29,16 +42,17 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="cyan darken-4" text @click="close()">Cancelar</v-btn>
-                    <v-btn color="cyan darken-4" dark @click="save()">Registrar</v-btn>
+                    <v-btn color="cyan darken-4" dark @click="save()">Asignar</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import moment from 'moment'
 import RULES from '@/mixins/rules'
 import {VForm} from '@/types/formvalidate'
+import {_Beneficiario} from "@/models/Beneficiario";
+import BeneficiarioService from "@/services/BeneficiarioService";
 
 export default Vue.extend({
     name: 'FormTurnos',
@@ -47,10 +61,10 @@ export default Vue.extend({
             type: Boolean,
             default: false
         },
-        pelicula: {
-          type: Object,
+        beneficiario: {
+          type: Object as () => _Beneficiario,
           default: null,
-          required: false,
+          required: true,
         }
     },
     mixins: [RULES],
@@ -58,28 +72,7 @@ export default Vue.extend({
     data: () => ({
         dialog: false,
         modal: false,
-        catalogo: {
-            turnos: []
-        },
-        turnos: [],
-        formPelicula: {
-            id: null,
-            p_nombre: '',
-            p_fecha_publicacion: moment().format("YYYY-MM-DD"),
-            p_genero: null,
-            p_clasificacion: null,
-            p_duracion: '',
-            p_imagen: ''
-        },
-        formDefault: {
-            id: null,
-            p_nombre: '',
-            p_fecha_publicacion: moment().format("YYYY-MM-DD"),
-            p_genero: null,
-            p_clasificacion: null,
-            p_duracion: '',
-            p_imagen: ''
-        },
+        folio: ''
     }),
     mounted() {
     },
@@ -89,21 +82,9 @@ export default Vue.extend({
         }
     },
     watch: {
-        pelicula: {
-            immediate: true,
-            deep: true,
-            handler(val){
-                if(val!=null){
-                    this.turnos = val.turnos;
-                    this.formPelicula = Object.assign({}, val);
-                }
-            }
-        },
         show: {
             immediate: true,
             handler(val){
-                if(val)
-                    this.cargar();
                 this.dialog = val;
             }
         }
@@ -114,9 +95,15 @@ export default Vue.extend({
         },
         async save(){
             if(this.form.validate()){
-                //let {data} = await PeliculaService.setHorarrios(this.pelicula.id, {turnos: this.turnos});
-                this.formPelicula = Object.assign({}, this.formDefault);
-                this.close(true);
+                let {data} = await BeneficiarioService.asignarPulsera(this.beneficiario.id,{folio: this.folio})
+                if(data.success){
+                  this.$toast.success(`Pulsera asignada exitosamente`);
+                  this.folio = '';
+                  this.close(true);
+                }else{
+                  this.$toast.error(data.message);
+                }
+
             }
         }
     }
