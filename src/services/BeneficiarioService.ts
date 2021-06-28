@@ -18,14 +18,6 @@ class BeneficiarioService extends DefaultService {
         return API.put(`/${this.url}/${id}`, data);
     }
 
-    activar(id: any): Promise<any> {
-        return API.post(`/${this.url}/${id}/change-estatus/1`);
-    }
-
-    desactivar(id: any): Promise<any> {
-        return API.post(`/${this.url}/${id}/change-estatus/0`);
-    }
-
     uploadImage(id: any, imagen: any) {
         const formData = new FormData();
         formData.append('p_imagen', imagen);

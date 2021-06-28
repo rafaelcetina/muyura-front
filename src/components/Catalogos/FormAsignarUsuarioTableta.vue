@@ -1,9 +1,9 @@
 <template>
-    <v-dialog v-model="dialog" persistent max-width="400px">
+    <v-dialog v-model="dialog" persistent max-width="600px">
             <v-card>
                 <v-toolbar color="#8784BF" dark>
                     <v-toolbar-title class="ml-0 pl-4">
-                        <span class="hidden-sm-and-down">Asignar Pulsera</span>
+                        <span class="hidden-sm-and-down">Asignar Tableta</span>
                     </v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-btn icon dark @click="close()">
@@ -16,26 +16,37 @@
                           <v-col cols="12">
                             <v-text-field
                                 readonly
-                                :value="beneficiario.nombre_completo"
-                                label="Beneficiario"
+                                :value="tableta.marca"
+                                label="Marca"
                             ></v-text-field>
                           </v-col>
                           <v-col cols="12">
                             <v-text-field
                                 readonly
-                                :value="beneficiario.curp"
-                                label="CURP Beneficiario"
+                                :value="tableta.modelo"
+                                label="Modelo"
                             ></v-text-field>
                           </v-col>
-                            <v-col cols="12">
-                                <v-text-field
-                                    v-uppercase
-                                    v-model="folio"
-                                    label="Folio"
-                                    aria-autocomplete="none"
-                                    autocomplete="off"
-                                ></v-text-field>
-                            </v-col>
+                          <v-col cols="12">
+                            <v-text-field
+                                readonly
+                                :value="tableta.no_serie"
+                                label="No de Serie"
+                            ></v-text-field>
+                          </v-col>
+                          <v-col cols="12">
+                            <v-autocomplete
+                                v-model="usuario"
+                                :items="usuarios"
+                                :rules="[rules.required]"
+                                autocomplete="new-password"
+                                :name="`user-${Math.random()}`"
+                                clearable
+                                item-text="nombre_completo"
+                                item-value="id"
+                                label="Usuario"
+                            ></v-autocomplete>
+                          </v-col>
                         </v-row>
                     </v-card-text>
                 </v-form>
@@ -51,18 +62,20 @@
 import Vue from 'vue'
 import RULES from '@/mixins/rules'
 import {VForm} from '@/types/formvalidate'
-import {_Beneficiario} from "@/models/Beneficiario";
-import BeneficiarioService from "@/services/BeneficiarioService";
+import {_Usuario} from "@/models/Usuario";
+import {_Tableta} from "@/models/Tableta";
+import {TabletaService} from "@/services/TabletaService";
+import UserService from "@/services/UserService";
 
 export default Vue.extend({
-    name: 'FormTurnos',
+    name: 'FormAsignarUsuarioTableta',
     props: {
         show: {
             type: Boolean,
             default: false
         },
-        beneficiario: {
-          type: Object as () => _Beneficiario,
+        tableta: {
+          type: Object as () => _Tableta,
           default: null,
           required: true,
         }
@@ -72,7 +85,9 @@ export default Vue.extend({
     data: () => ({
         dialog: false,
         modal: false,
-        folio: ''
+        service: new TabletaService(),
+        usuarios: [] as _Usuario[],
+        usuario: null
     }),
     mounted() {
     },
@@ -86,20 +101,26 @@ export default Vue.extend({
             immediate: true,
             handler(val){
                 this.dialog = val;
+                if(val)
+                  this.cargarUsuarios();
             }
         }
     },
     methods: {
         close(reload: boolean = false){
-            this.folio = '';
+            this.usuario = null
             this.form.resetValidation();
             this.$emit('close-dialog', reload);
         },
+        async cargarUsuarios(){
+            let {data: {data}} = await UserService.withoutTablet();
+            this.usuarios = data;
+        },
         async save(){
             if(this.form.validate()){
-                let {data} = await BeneficiarioService.asignarPulsera(this.beneficiario.id,{folio: this.folio})
+                let {data} = await this.service.vincular(this.tableta.id, this.usuario)
                 if(data.success){
-                  this.$toast.success(`Pulsera asignada exitosamente`);
+                  this.$toast.success(`Usuario asignado exitosamente`);
                   this.close(true);
                 }else{
                   this.$toast.error(data.message);

@@ -6,24 +6,25 @@
           <v-row>
             <v-col cols="12" md="4">
               <v-text-field
-                  :readonly="!editable"
+                  readonly
                   v-model="formUser.nombre"
                   label="Nombre"></v-text-field>
             </v-col>
             <v-col cols="12" md="4">
               <v-text-field
-                  :readonly="!editable"
+                  readonly
                   v-model="formUser.apellido1"
                   label="Primer Apellido"></v-text-field>
             </v-col>
             <v-col cols="12" md="4">
               <v-text-field
-                  :readonly="!editable"
+                  readonly
                   v-model="formUser.apellido2"
                   label="Segundo Apellido"></v-text-field>
             </v-col>
             <v-col cols="12" md="3">
               <v-text-field
+                  readonly
                   v-uppercase
                   :rules="[rules.required,rules.regex('^[A-z]{4}[0-9]{6}[0-9A-z]{3}$')]"
                   v-mask="'AAAA######NNN'"
@@ -35,6 +36,7 @@
             <v-col cols="12" md="3">
               <v-text-field
                   :readonly="!editable"
+                  :rules="[rules.required]"
                   v-uppercase
                   v-mask="'(###) ### ####'"
                   v-model="formUser.telefono"
@@ -53,16 +55,16 @@
 
           </v-row>
         </v-card-text>
-        <v-card-actions>
-          <v-btn v-if="editable" :loading="loading" @click.native="cancelar()">
+        <v-card-actions class="px-12 pb-12">
+          <v-btn v-if="editable" @click.native="cancelar()">
             <v-icon left dark>mdi-close</v-icon>
             Cancelar
           </v-btn>
-          <v-btn v-if="editable" color="primary" :loading="loading" @click.native="update()">
+          <v-btn v-if="editable" color="primary" @click.native="update()">
             <v-icon left dark>mdi-check</v-icon>
             Guardar Cambios
           </v-btn>
-          <v-btn v-else color="success" :loading="loading" @click.native="editar()">
+          <v-btn v-else color="success" @click.native="editar()">
             <v-icon left dark>mdi-pencil</v-icon>
             Editar Perfil
           </v-btn>
@@ -85,6 +87,7 @@ export default Vue.extend({
   mixins: [RULES],
   data () {
     return {
+      loading: false,
       editable: false,
       formUser: new Usuario(),
       formDefault: new Usuario(),
@@ -113,10 +116,12 @@ export default Vue.extend({
       this.editable = false;
     },
     async update(){
-      let data = Object.assign({}, this.formUser);
-      data.telefono = UnMask.unmask(data.telefono, '(###) ### ####')
-      let response = await UserService.update(this.id, data);
-      if(response.success) {
+      let formdata = Object.assign({}, this.formUser);
+      if(formdata.telefono!=null && formdata.telefono!='')
+        formdata.telefono = UnMask.unmask(formdata.telefono, '(###) ### ####')
+      let {data} = await UserService.update(this.id, formdata);
+      if(data.success) {
+        this.$toast.success('Perfil actualizado exitosamente');
         await this.$store.dispatch('updateUser', this.formUser.nombre)
         this.formDefault = Object.assign({}, this.formUser);
       }

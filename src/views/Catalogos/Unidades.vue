@@ -25,6 +25,18 @@
               </template>
               <span>Editar</span>
             </v-tooltip>
+            <v-tooltip v-if="item.usuario_id==null" bottom>
+              <template v-slot:activator="{ on }">
+                <v-btn icon @click="usersDetail(item)">
+                  <v-icon
+                      v-on="on"
+                  >
+                    mdi-account-switch
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span>Gestionar Equipo</span>
+            </v-tooltip>
             <v-tooltip v-if="!item.estatus" bottom>
               <template v-slot:activator="{ on }">
                 <v-btn icon @click="activar(item)">
@@ -69,6 +81,7 @@
       </v-col>
     </v-row>
     <form-create :model="element" :service="service" :show="dialog" @close-dialog="closeDialog"></form-create>
+    <form-asignar :unidad="element" :show="dialogT" @close-dialog="closeDialog"></form-asignar>
   </v-container>
 </template>
 
@@ -77,15 +90,17 @@ import Vue from 'vue'
 import {Unidad, _Unidad} from "@/models/Unidad";
 import {CatalogoService} from "@/services/CatalogoService";
 import FormCreate from '@/components/Catalogos/FormUnidadCreate.vue'
+import FormAsignar from "@/components/Catalogos/FormAsignarUsuarioUnidad.vue";
 
 export default Vue.extend({
   name: 'Unidades',
   mixins: [],
   components: {
-    FormCreate,
+    FormCreate, FormAsignar
   },
   data: () => ({
     dialog: false,
+    dialogT: false,
     service: new CatalogoService('unidades'),
     list: [] as _Unidad[],
     element: new Unidad(),
@@ -103,6 +118,10 @@ export default Vue.extend({
   computed: {},
   watch: {},
   methods: {
+    usersDetail(item: any){
+      this.element = Object.assign({}, item);
+      this.dialogT = true;
+    },
     async cargar(){
       let {data} = await this.service.getAll();
       if (data.success)
@@ -134,6 +153,7 @@ export default Vue.extend({
     },
     closeDialog(reload: boolean) {
       this.dialog = false;
+      this.dialogT = false;
       if(reload)
         this.cargar();
     }

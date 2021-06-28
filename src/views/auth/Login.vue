@@ -107,7 +107,7 @@
                         await this.$store.dispatch('setToken', data.data);
                         await this.$router.push({name: 'Full'});
                     }else
-                        console.log("Datos de acceso incorrectos");
+                      this.$toast.error(`Datos de acceso incorrectos`);
                 }
             },
         }

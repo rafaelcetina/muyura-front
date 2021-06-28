@@ -17,6 +17,7 @@ interface _Usuario {
     estatus: boolean | number
     email: string
     username: string
+    tableta_count: number
 }
 
 class Usuario implements _Usuario{
@@ -37,6 +38,7 @@ class Usuario implements _Usuario{
     estatus = false
     email = ''
     username = ''
+    tableta_count = 0
 
     setData(data: Json){
 
