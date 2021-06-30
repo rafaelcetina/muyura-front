@@ -12,7 +12,7 @@
         <v-footer dark color="#0167B1" class="caption" app>
           <v-row>
             <v-col class="caption text-right">
-              All rigth reserved - 2021
+              {{ footer }}
             </v-col>
           </v-row>
         </v-footer>
@@ -30,6 +30,7 @@ export default Vue.extend({
         bus: EventBus,
         dialog: false,
         overlay: false,
+        footer: process.env.VUE_APP_FOOTER_INFO
       }),
       created(){
         EventBus.$on('before-request', () => {
