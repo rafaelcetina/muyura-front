@@ -91,7 +91,8 @@ export default Vue.extend({
     element: new Servicio(),
     search: '',
     headers: [
-      {text: 'Id', value: 'id', align: 'left', width: 150},
+      {text: 'Id', value: 'id', align: 'left', width: 100},
+      {text: 'Código', value: 'servicio_code', align: 'left', width: 200},
       {text: 'Nombre', value: 'servicio_nombre', align: 'left'},
       {text: '', value: 'action', width: 240, sortable: false},
     ]

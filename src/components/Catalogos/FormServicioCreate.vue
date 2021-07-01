@@ -22,6 +22,15 @@
                   label="Nombre"
               ></v-text-field>
             </v-col>
+            <v-col cols="12" md="12">
+              <v-text-field
+                  v-model="formdata.servicio_code"
+                  v-uppercase
+                  :rules="[rules.required]"
+                  autocomplete="off"
+                  label="Código"
+              ></v-text-field>
+            </v-col>
           </v-row>
         </v-card-text>
       </v-form>
